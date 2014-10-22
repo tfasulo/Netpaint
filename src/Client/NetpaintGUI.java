@@ -2,35 +2,39 @@ package Client;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import Shapes.Rectangle;
+
 public class NetpaintGUI extends JFrame{
 	
+	private JColorChooser colorChooser;
 	private JPanel drawingPanel;
 	private JPanel radioButtonPanel;
 	private JPanel drawingArea;
-	private JPanel previewPanel;
 	private JScrollPane drawingPane;
-	private JTabbedPane panel;
 	private ButtonGroup radioGroup;
-	//private JPanel swatchesView = new SwatchesView();
-	//private JPanel HsvView = new HsvView();
-	//private JPanel HslView = new HslView();
-	//private JPanel RgbView = new RgbView();
-	//private JPanel CmykView = new CmykView();
-	private JPanel swatchesView = new JPanel();
-	private JPanel HsvView = new JPanel();
-	private JPanel HslView = new JPanel();
-	private JPanel RgbView = new JPanel();
-	private JPanel CmykView = new JPanel();
+	private JRadioButton line;
+	private JRadioButton rectangle;
+	private JRadioButton oval;
+	private JRadioButton image;
 	
 	public static void main(String[] args){
 		
@@ -39,20 +43,19 @@ public class NetpaintGUI extends JFrame{
 
 	public NetpaintGUI(){
 		
-		drawingArea = new JPanel();
-		drawingArea.setBackground(Color.WHITE);
-		drawingArea.setSize(800, 1000);
+		colorChooser = new JColorChooser();
 		
+		drawingArea = new DrawingArea();
 		drawingPane = new JScrollPane(drawingArea);
-		//drawingPane.setWheelScrollingEnabled(true);
+		drawingPane.setWheelScrollingEnabled(true);
 		
 		radioButtonPanel = new JPanel();
 		radioGroup = new ButtonGroup();
 		
-		JRadioButton line = new JRadioButton("Line");
-		JRadioButton rectangle = new JRadioButton("Rectangle");
-		JRadioButton oval = new JRadioButton("Oval");
-		JRadioButton image = new JRadioButton("Image");
+		line = new JRadioButton("Line");
+		rectangle = new JRadioButton("Rectangle");
+		oval = new JRadioButton("Oval");
+		image = new JRadioButton("Image");
 		
 		radioGroup.add(line);
 		radioGroup.add(rectangle);
@@ -69,24 +72,112 @@ public class NetpaintGUI extends JFrame{
 		drawingPanel.add(drawingPane, BorderLayout.CENTER);
 		drawingPanel.add(radioButtonPanel, BorderLayout.SOUTH);
 		
-		panel = new JTabbedPane();
-		panel.add(swatchesView, "Swatches");
-		panel.add(HsvView, "HSV");
-		panel.add(HslView, "HSL");
-		panel.add(RgbView, "RGB");
-		panel.add(CmykView, "CMYK");
-		
-		previewPanel = new JPanel();
-		previewPanel.setBorder(BorderFactory.createTitledBorder("Preview"));
-		
-		this.setLayout(new GridLayout(3, 0));
-		this.add(drawingPanel);
-		this.add(panel);
-		this.add(previewPanel);
+		Toolkit tk = Toolkit.getDefaultToolkit();
+		Dimension d = tk.getScreenSize();
+		this.add(drawingPanel, BorderLayout.CENTER);
+		this.add(colorChooser, BorderLayout.PAGE_END);
 		this.setTitle("Netpaint Client");
-		this.setSize(800,800);
-		this.setLocation(400, 100);
+		this.setSize(d.width - 250, d.height - 150);
+		this.setLocation(100, 20);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
+	}
+	
+	private class DrawingArea extends JPanel {
+		
+		private int oldY;
+		private int oldX;
+		private int newX;
+		private int newY;
+		private int pivotX;
+		private int pivotY;
+		private boolean isDrawing;
+		
+		public DrawingArea() {
+			
+			this.setBackground(Color.WHITE);
+			
+			isDrawing = false;
+			
+			MouseListener listener = new ListenToMouse();
+			MouseMotionListener motionListener = new ListenToMouse();
+			
+			this.addMouseMotionListener(motionListener);
+			this.addMouseListener(listener);
+		}
+		
+		private class ListenToMouse implements MouseMotionListener, MouseListener {
+
+			@Override
+			public void mouseDragged(MouseEvent arg0) {}
+
+			@Override
+			public void mouseMoved(MouseEvent arg0) {
+
+				newX = arg0.getX();
+				newY = arg0.getY();
+				
+				if(isDrawing){
+					if(rectangle.isSelected()){
+						
+						if(newX-pivotX<0 && newY-pivotY<0){
+							Graphics2D g2 = (Graphics2D) getGraphics();
+							Rectangle2D.Double rect = new Rectangle2D.Double(newX-pivotX, newY-pivotY, pivotX, pivotY);
+							g2.fill(rect);
+						}
+						else{
+							Graphics2D g2 = (Graphics2D) getGraphics();
+							Rectangle2D.Double rect = new Rectangle2D.Double(pivotX, pivotY, newX-pivotX, newY-pivotY);
+							g2.fill(rect);
+						}
+						
+					}
+					else if(oval.isSelected()){
+						
+						
+					}
+					else if(image.isSelected()){
+						
+						
+					}
+					else if(line.isSelected()){
+						
+						
+					}
+					else{
+						System.out.println("Select a Shape first.");
+					}
+				}
+				
+				oldX = newX;
+				oldY = newY;
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+				if(!isDrawing){
+					pivotX = arg0.getX();
+					pivotY = arg0.getY();
+				}
+
+				newX = arg0.getX();
+				newY = arg0.getY();
+				
+				isDrawing = !isDrawing;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {}
+		}
 	}
 }
