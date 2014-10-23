@@ -31,7 +31,7 @@ import Shapes.Rectangle;
 import Shapes.Shape;
 
 /**
- * 
+ * The Graphical user interface for the client side of Net Paint.
  * @author Jason, Trevor
  *
  */
@@ -51,10 +51,19 @@ public class NetpaintGUI extends JFrame {
 	private BufferedImage doge=null;
 	private ArrayList<Shape> shapes = new ArrayList<Shape>();
 
+/**
+ * Constructs a new NetpaintGUI object.	
+ * @param args - the command line arguments passed to the program. This program does not do anything with these arguments.
+ */
+	
 	public static void main(String[] args) {
 
 		new NetpaintGUI();
 	}
+	
+/**
+ * Constructs a Netpaint GUI and adds objects to it. Objects that are included are {@link JColorChooser}, {@link JRadioButton}s, {@link Shape}s drawn such as {@link Rectangle}.
+ */
 
 	public NetpaintGUI() {
 
@@ -99,6 +108,12 @@ public class NetpaintGUI extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
+	
+	/**
+	 * Constructs a JPanel in which the user can draw selected shapes.
+	 * @author Trevor, Jason
+	 *
+	 */
 
 	private class DrawingArea extends JPanel {
 
@@ -111,6 +126,10 @@ public class NetpaintGUI extends JFrame {
 		int height;
 		int upperX;
 		int upperY;
+		
+		/**
+		 * Constructor for drawing area. Contains {@link MouseListner}s and {@link MouseMotionListener} for the drawing area.
+		 */
 
 		public DrawingArea() {
 
@@ -124,6 +143,12 @@ public class NetpaintGUI extends JFrame {
 			this.addMouseMotionListener(motionListener);
 			this.addMouseListener(listener);
 		}
+		
+		/**
+		 * For each {@link Shape} that the user is drawing, track the current movement of the mouse to draw the ghost shape in the region the mouse has moved.
+		 * @author Trevor, Jason
+		 *
+		 */
 
 		private class ListenToMouse implements MouseMotionListener,
 				MouseListener {
@@ -131,6 +156,11 @@ public class NetpaintGUI extends JFrame {
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
 			}
+			
+			/**
+			 * Updates the current position of where the mouse is and repaints the {@link Shape} that the user has selected.
+			 * @param arg0 - The mouse event passed in when the mouse is pressed
+			 */
 
 			@Override
 			public void mouseMoved(MouseEvent arg0) {
@@ -138,9 +168,6 @@ public class NetpaintGUI extends JFrame {
 				newX = arg0.getX();
 				newY = arg0.getY();
 				repaint();
-
-				// oldX = newX;
-				// oldY = newY;
 			}
 
 			@Override
@@ -154,6 +181,11 @@ public class NetpaintGUI extends JFrame {
 			@Override
 			public void mouseExited(MouseEvent arg0) {
 			}
+			
+			/**
+			 * Determines whether or not the using is trying to draw a {@link Shape} or if the user is finished drawing a shape and repaints the shape drawn.
+			 * @param arg0 - The mouse event passed in when the mouse is pressed
+			 */
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
@@ -183,17 +215,12 @@ public class NetpaintGUI extends JFrame {
 						else if (image.isSelected()){
 							shapes.add(new Image(upperX, upperY, width, height, doge));
 						}
-						
-
 					}
 
 					isDrawing = !isDrawing;
 				}
 
 				repaint();
-
-				// newX = arg0.getX();
-				// newY = arg0.getY();
 			}
 
 			@Override
@@ -201,6 +228,11 @@ public class NetpaintGUI extends JFrame {
 
 			}
 		}
+		
+		/**
+		 *Draws all of the drawn {@link Shape}s in the {@link DrawingArea} 
+		 *@param g - The graphics that is passed into the paint component. 
+		 */
 
 		@Override
 		public void paintComponent(Graphics g) {
@@ -220,9 +252,7 @@ public class NetpaintGUI extends JFrame {
 				// Go through all the shapes saved and paint them.
 				for (Shape shape : shapes) {
 					shape.draw(g);
-
 				}
-
 			}
 			g2.setColor(colorChooser.getColor());
 			if (isDrawing) {
