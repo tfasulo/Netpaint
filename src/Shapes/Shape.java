@@ -6,18 +6,34 @@ import java.awt.Point;
 abstract public class Shape {
 
 	private Point upperLeft;
+	private Point dimensions;
 	private Color color;
+	private Point pivot;
 	
-	Shape(int x, int y, Color color){
+	Shape(int x, int y, Color color, int width, int height){
 		upperLeft = new Point(x,y);
+		dimensions = new Point(width, height);
+		
 		this.color = color;
 	}
 	
-	protected Point getUpperLeft(){
+	Shape(int x, int y, int pivotX, int pivotY, Color color){
+		
+	}
+	
+	public Point getUpperLeft(){
 		return upperLeft;
 	}
 	
-	protected Color getColor(){
+	public Point getDimensions(){
+		return dimensions;
+	}
+	
+	public Color getColor(){
 		return color;
+	}
+	
+	protected Point getPivot(){
+		return pivot;
 	}
 }

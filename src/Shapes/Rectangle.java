@@ -4,9 +4,10 @@ import java.awt.Color;
 
 public class Rectangle extends Shape{
 
-	Rectangle(int x, int y, Color color) {
-		super(x, y, color);
-		// TODO Auto-generated constructor stub
+	public Rectangle(int x, int y, Color color, int width, int height) {
+		super(x, y, color, width,height);
 	}
+	
+	
 
 }

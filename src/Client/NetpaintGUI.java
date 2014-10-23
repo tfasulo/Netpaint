@@ -6,12 +6,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -22,8 +24,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import Shapes.Image;
+import Shapes.Line;
 import Shapes.Oval;
 import Shapes.Rectangle;
+import Shapes.Shape;
 
 public class NetpaintGUI extends JFrame{
 	
@@ -37,6 +42,12 @@ public class NetpaintGUI extends JFrame{
 	private JRadioButton rectangle;
 	private JRadioButton oval;
 	private JRadioButton image;
+//	private ArrayList<Rectangle> rectangles = new ArrayList<Rectangle>();
+//	private ArrayList<Oval> ovals = new ArrayList<Oval>();
+//	private ArrayList<Line> lines = new ArrayList<Line>();
+//	private ArrayList<Image> images = new ArrayList<Image>();
+	private ArrayList<Shape> shapes = new ArrayList<Shape>();
+	
 	
 	public static void main(String[] args){
 		
@@ -45,7 +56,7 @@ public class NetpaintGUI extends JFrame{
 
 	public NetpaintGUI(){
 		
-		colorChooser = new JColorChooser();
+		colorChooser = new JColorChooser(Color.BLACK);
 		
 		drawingArea = new DrawingArea();
 		drawingPane = new JScrollPane(drawingArea);
@@ -115,123 +126,202 @@ public class NetpaintGUI extends JFrame{
 		private class ListenToMouse implements MouseMotionListener, MouseListener {
 
 			@Override
-			public void mouseDragged(MouseEvent arg0) {}
+			public void mouseDragged(MouseEvent arg0) {
+				//repaint();
+			}
 
 			@Override
 			public void mouseMoved(MouseEvent arg0) {
 
 				newX = arg0.getX();
 				newY = arg0.getY();
-				
-				
-				if(isDrawing){
-					if(rectangle.isSelected()){
-						if(newX-pivotX<=0 && newY-pivotY<=0){
-							Graphics2D g2 = (Graphics2D) getGraphics();
-							Rectangle2D.Double rect = new Rectangle2D.Double(newX, newY, pivotX-newX, pivotY-newY);
-							g2.fill(rect);
-						}
-						else if (newX-pivotX<0 && newY-pivotY>0){
-							Graphics2D g2 = (Graphics2D) getGraphics();
-							Rectangle2D.Double rect = new Rectangle2D.Double(newX, pivotY, pivotX-newX, newY-pivotY);
-							g2.fill(rect);
-						}
-						
-						else if (newX-pivotX>0 && newY-pivotY<0){
-							Graphics2D g2 = (Graphics2D) getGraphics();
-							Rectangle2D.Double rect = new Rectangle2D.Double(pivotX, newY, newX-pivotX, pivotY-newY);
-							g2.fill(rect);
-						}
-						
-						else{
-							Graphics2D g2 = (Graphics2D) getGraphics();
-							Rectangle2D.Double rect = new Rectangle2D.Double(pivotX, pivotY, newX-pivotX, newY-pivotY);
-							g2.fill(rect);
-						}
-					}
-					else if(oval.isSelected()){
-						if(newX-pivotX<=0 && newY-pivotY<=0){
+				System.out.println("Repainted");
+				repaint();
 
-							width = pivotX-newX;
-							height = pivotY-newY;
-							upperX = newX;
-							upperY = newY;
-//							Graphics2D g2 = (Graphics2D) getGraphics();
-//							g2.fillOval(newX, newY, pivotX-newX, pivotY-newY);
-						}
-						else if (newX-pivotX<0 && newY-pivotY>0){
-							width = pivotX-newX;
-							height = newY-pivotY;
-							upperX = newX;
-							upperY = pivotY;
-//							Graphics2D g2 = (Graphics2D) getGraphics();
-//							g2.fillOval(newX, pivotY, pivotX-newX, newY-pivotY);
-						}
-						
-						else if (newX-pivotX>0 && newY-pivotY<0){
-							width = newX-pivotX;
-							height = pivotY-newY;
-							upperX = pivotX;
-							upperY = newY;
-//							Graphics2D g2 = (Graphics2D) getGraphics();
-//							g2.fillOval(pivotX, newY, newX-pivotX, pivotY-newY);
-						}
-						
-						else{
-							width = newX-pivotX;
-							height = newY-pivotY;
-							upperX = pivotX;
-							upperY = pivotY;
-//							Graphics2D g2 = (Graphics2D) getGraphics();
-//							g2.fillOval(pivotX, pivotY, newX-pivotX, newY-pivotY);
-						}	
-							Graphics2D g2 = (Graphics2D) getGraphics();
-							g2.fillOval(upperX,upperY, width, height);
-						
-					}
-					else if(image.isSelected()){
-						
-						
-					}
-					else if(line.isSelected()){
-						
-							Graphics2D g2 = (Graphics2D) getGraphics();
-							Line2D.Double line = new Line2D.Double(pivotX, pivotY, newX, newY);
-							g2.draw(line);
-					}
-					else{
-						System.out.println("Select a Shape first.");
-					}
-				}
-				oldX = newX;
-				oldY = newY;
+//				oldX = newX;
+//				oldY = newY;
 			}
 
 			@Override
-			public void mouseClicked(MouseEvent arg0) {}
+			public void mouseClicked(MouseEvent arg0) {
+				//repaint();
+			}
 
 			@Override
-			public void mouseEntered(MouseEvent arg0) {}
+			public void mouseEntered(MouseEvent arg0) {
+				//repaint();
+			}
 
 			@Override
-			public void mouseExited(MouseEvent arg0) {}
+			public void mouseExited(MouseEvent arg0) {
+				//repaint();
+			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				
-				if(!isDrawing){
-					pivotX = arg0.getX();
-					pivotY = arg0.getY();
-				}
+				if (rectangle.isSelected() || oval.isSelected() || line.isSelected() || image.isSelected()){
+					
+					if(!isDrawing){
+						pivotX = arg0.getX();
+						pivotY = arg0.getY();
+					}
+					else{
+						//TODO, save the coordinates into the shape selected.
+						if (rectangle.isSelected()){
+							shapes.add(new Rectangle(upperX,upperY, colorChooser.getColor(), width, height));
+						}
+						else if (oval.isSelected()){
+							shapes.add(new Oval(upperX,upperY,colorChooser.getColor(), width, height));
+						}
+						else if (line.isSelected()){
+							shapes.add(new Line(newX, newY, pivotX, pivotY, colorChooser.getColor()));
+						}
+						
+						
+						
+					}
 
-				newX = arg0.getX();
-				newY = arg0.getY();
+					isDrawing = !isDrawing;
+				}
 				
-				isDrawing = !isDrawing;
+				repaint();
+
+				
+//				newX = arg0.getX();
+//				newY = arg0.getY();
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {
+				//repaint();
+			}
+		}
+		
+		
+		@Override 
+        public void paintComponent(Graphics g) {
+			
+			super.paintComponent(g);
+			Graphics2D g2 = (Graphics2D) g;
+			
+			
+			Rectangle2D.Double rect;
+			
+			if (shapes.isEmpty()) {
+			}
+			else{
+				// Go through all the rectangles saved and paint them.
+				for (Shape shape : shapes) {
+					Point upperLeft = shape.getUpperLeft();
+					Point dimension = shape.getDimensions();
+					
+					rect = new Rectangle2D.Double(
+							upperLeft.getX(), upperLeft.getY(),
+							dimension.getX(), dimension.getY());
+					g2.setColor(shape.getColor());
+					g2.fill(rect);
+
+				}
+				
+			}
+			
+			
+			g2.setColor(colorChooser.getColor());
+			if(isDrawing){
+				if(rectangle.isSelected()){
+					if(newX-pivotX<=0 && newY-pivotY<=0){
+						upperX = newX;
+						upperY = newY;
+						width = pivotX-newX;
+						height = pivotY-newY;
+						rect = new Rectangle2D.Double(newX, newY, pivotX-newX, pivotY-newY);
+						g2.fill(rect);
+					}
+					else if (newX-pivotX<0 && newY-pivotY>0){
+						upperX = newX;
+						upperY = pivotY;
+						width = pivotX-newX;
+						height = newY-pivotY;
+						rect = new Rectangle2D.Double(newX, pivotY, pivotX-newX, newY-pivotY);
+						g2.fill(rect);
+					}
+					
+					else if (newX-pivotX>0 && newY-pivotY<0){
+						upperX = pivotX;
+						upperY = newY;
+						width = newX-pivotX;
+						height = pivotY-newY;
+						rect = new Rectangle2D.Double(pivotX, newY, newX-pivotX, pivotY-newY);
+						g2.fill(rect);
+					}
+					
+					else{
+						upperX = pivotX;
+						upperY = pivotY;
+						width = newX-pivotX;
+						height = newY-pivotY;
+						rect = new Rectangle2D.Double(pivotX, pivotY, newX-pivotX, newY-pivotY);
+						g2.fill(rect);
+					}
+				}
+				else if(oval.isSelected()){
+					if(newX-pivotX<=0 && newY-pivotY<=0){
+
+						width = pivotX-newX;
+						height = pivotY-newY;
+						upperX = newX;
+						upperY = newY;
+//						Graphics2D g2 = (Graphics2D) getGraphics();
+//						g2.fillOval(newX, newY, pivotX-newX, pivotY-newY);
+					}
+					else if (newX-pivotX<0 && newY-pivotY>0){
+						width = pivotX-newX;
+						height = newY-pivotY;
+						upperX = newX;
+						upperY = pivotY;
+//						Graphics2D g2 = (Graphics2D) getGraphics();
+//						g2.fillOval(newX, pivotY, pivotX-newX, newY-pivotY);
+					}
+					
+					else if (newX-pivotX>0 && newY-pivotY<0){
+						width = newX-pivotX;
+						height = pivotY-newY;
+						upperX = pivotX;
+						upperY = newY;
+//						Graphics2D g2 = (Graphics2D) getGraphics();
+//						g2.fillOval(pivotX, newY, newX-pivotX, pivotY-newY);
+					}
+					
+					else{
+						width = newX-pivotX;
+						height = newY-pivotY;
+						upperX = pivotX;
+						upperY = pivotY;
+//						Graphics2D g2 = (Graphics2D) getGraphics();
+//						g2.fillOval(pivotX, pivotY, newX-pivotX, newY-pivotY);
+					}	
+						g2.fillOval(upperX, upperY, width, height);
+						
+					
+				}
+				else if(image.isSelected()){
+					
+					
+				}
+				else if(line.isSelected()){
+					
+						Line2D.Double line = new Line2D.Double(pivotX, pivotY, newX, newY);
+						g2.draw(line);
+				}
+				else{
+					System.out.println("Select a Shape first.");
+				}
+			}
+			
+			System.out.println("Painted");
+			
+			
 		}
 	}
 }
